@@ -89,10 +89,17 @@ namespace NetWalkerAnalysis
             if (allReadme.Count > 0 || exePresent)
             {
                 ResultDisplayer.Locked();
+                Logger.Console("Readme found: " + allReadme.Count);
+                Logger.Console("Readme found on drives: " + notSharesReadme.Count);
+                Logger.Console("Readme found on shares: " + sharesReadme.Count);
+                Logger.Console("Malicious EXE present: " + (exePresent ? "Yes" : "No"));
+                Console.WriteLine();
             }
             else if (UserAccountCollector.HasAdfs())
             {
                 ResultDisplayer.Unclean();
+                Logger.Console("ADFS account detected");
+                Console.WriteLine();
             }
             else
             {

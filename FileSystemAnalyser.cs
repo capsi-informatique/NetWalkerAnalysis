@@ -36,7 +36,7 @@ namespace NetWalkerAnalysis
 
             foreach (DriveInfo drive in drives)
             {
-                if (drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable)
+                if ((drive.DriveType == DriveType.Fixed || drive.DriveType == DriveType.Removable) && drive.IsReady)
                 {
                     letters.Add(drive.Name);
                 }
@@ -111,16 +111,21 @@ namespace NetWalkerAnalysis
             List<string> readme = new List<string>();
             foreach (string file in files)
             {
-                MatchCollection matches = Regex.Matches(file, Pattern, RegexOptions.IgnoreCase);
-                if (matches.Count > 0 && !readme.Contains(matches[0].Groups[1].Value))
-                {
-                    readme.Add(matches[0].Groups[1].Value);
-                }
+                AddIfReadme(readme, file);
             }
 
             readme.Sort();
             Logger.WriteFile(readme);
             return readme;
+        }
+
+        private static void AddIfReadme(List<string> readme, string file)
+        {
+            MatchCollection matches = Regex.Matches(file, Pattern, RegexOptions.IgnoreCase);
+            if (matches.Count > 0 && !readme.Contains(matches[0].Groups[1].Value))
+            {
+                readme.Add(matches[0].Groups[1].Value);
+            }
         }
 
         /// <summary>
@@ -139,13 +144,9 @@ namespace NetWalkerAnalysis
             {
                 foreach (string share in shares)
                 {
-                    if (file.StartsWith(share + "\\"))
+                    if (file.ToLower().StartsWith(share.ToLower() + "\\"))
                     {
-                        MatchCollection matches = Regex.Matches(file, Pattern, RegexOptions.IgnoreCase);
-                        if (matches.Count > 0 && !readme.Contains(matches[0].Groups[1].Value))
-                        {
-                            readme.Add(matches[0].Groups[1].Value);
-                        }
+                        AddIfReadme(readme, file);
                     }
                 }
             }
@@ -171,13 +172,9 @@ namespace NetWalkerAnalysis
             {
                 foreach (string share in shares)
                 {
-                    if (!file.StartsWith(share + "\\"))
+                    if (!file.ToLower().StartsWith(share.ToLower() + "\\"))
                     {
-                        MatchCollection matches = Regex.Matches(file, Pattern, RegexOptions.IgnoreCase);
-                        if (matches.Count > 0 && !readme.Contains(matches[0].Groups[1].Value))
-                        {
-                            readme.Add(matches[0].Groups[1].Value);
-                        }
+                        AddIfReadme(readme, file);
                     }
                 }
             }
@@ -196,10 +193,10 @@ namespace NetWalkerAnalysis
         {
             foreach (string file in files)
             {
-                string[] patterns = { "\\BatchDownload.exe$", "\\mairie.exe$" };
+                string[] patterns = { "\\BatchDownload.exe", "\\mairie.exe" };
                 foreach (string pattern in patterns)
                 {
-                    if (!file.EndsWith(pattern))
+                    if (file.ToLower().EndsWith(pattern.ToLower()))
                     {
                         return true;
                     }
