@@ -47,7 +47,7 @@ namespace NetWalkerAnalysis
         /// <param name="content">Content to write</param>
         public static void WriteFile(string file, List<string> content)
         {
-            File.WriteAllLines(ResultDir + "\\" + file + ".txt", content);
+            File.WriteAllLines(ResultDir + "\\" + file + ".txt", content.ToArray());
         }
 
         /// <summary>
